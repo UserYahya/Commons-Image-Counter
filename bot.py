@@ -4,7 +4,7 @@ import requests
 import logging
 from telegram import Update, ChatMember
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-from telegram.helpers import escape_markdown  # ✅ Required for MarkdownV2 escaping
+from telegram.helpers import escape_markdown
 
 logging.basicConfig(level=logging.INFO)
 CONFIG_FILE = "group_configs.json"
@@ -102,18 +102,18 @@ async def count(update: Update, context: ContextTypes.DEFAULT_TYPE):
     category = cfg[cid]
     await update.message.reply_text("\u23f3 Counting files. Please wait...")
 
+    counts = get_file_counts_by_category(category)
+    total = sum(counts.values())
 
-counts = get_file_counts_by_category(category)
-total = sum(counts.values())
+    escaped_category = escape_markdown(category, version=2)
+    msg = f"\ud83d\udcc8 Total files in *{escaped_category}* and subcategories: *{total}*\n"
 
-escaped_category = escape_markdown(category, version=2)
-msg = f"📊 Total files in *{escaped_category}* and subcategories: *{total}*\n"
+    for cat, c in counts.items():
+        escaped_cat = escape_markdown(cat, version=2)
+        msg += f"\u2022 `{escaped_cat}` – {c} files\n"
 
-for cat, c in counts.items():
-    escaped_cat = escape_markdown(cat, version=2)
-    msg += f"• `{escaped_cat}` – {c} files\n"
+    await update.message.reply_text(msg, parse_mode="MarkdownV2")
 
-await update.message.reply_text(msg, parse_mode="MarkdownV2")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Send /cat to set a category, /count to get file count.")
