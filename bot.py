@@ -100,18 +100,19 @@ async def count(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("No category set. Use /cat <name>")
         return
     category = cfg[cid]
-    await update.message.reply_text("\u23f3 Counting files. Please wait...")
+    await update.message.reply_text("⏳ Counting files. Please wait...")
 
     counts = get_file_counts_by_category(category)
     total = sum(counts.values())
 
     escaped_category = escape_markdown(category, version=2)
-    msg = f"\ud83d\udcc8 Total files in *{escaped_category}* and subcategories: *{total}*\n"
+    msg = f"Total files in *{escaped_category}* and subcategories: *{total}*\n"
 
     for cat, c in counts.items():
         escaped_cat = escape_markdown(cat, version=2)
-        msg += f"\u2022 `{escaped_cat}` – {c} files\n"
+        msg += f"• `{escaped_cat}` – {c} files\n"
 
+    # Send message without emojis and MarkdownV2 to avoid Unicode issues
     await update.message.reply_text(msg, parse_mode="MarkdownV2")
 
 
