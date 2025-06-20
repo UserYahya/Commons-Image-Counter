@@ -21,7 +21,7 @@ async def is_admin(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
     member = await context.bot.get_chat_member(chat_id, user_id)
-    return member.status in [ChatMember.ADMINISTRATOR, ChatMember.CREATOR]
+    return member.status in [ChatMember.ADMINISTRATOR, ChatMember.OWNER]
 
 
 async def cat(update: Update, context: ContextTypes.DEFAULT_TYPE):
